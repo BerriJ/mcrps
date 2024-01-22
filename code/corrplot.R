@@ -1,71 +1,73 @@
 source("code/functions.R")
 
-dirs <- list.dirs("data", recursive = FALSE)
+# dirs <- list.dirs("data", recursive = FALSE)
 
-files <- dirs %>%
-    purrr::map(list.files, full.names = TRUE)
+# files <- dirs %>%
+#     purrr::map(list.files, full.names = TRUE)
 
-jsu <- files[[1]] %>%
-    purrr::map(list.files, full.names = TRUE)
+# jsu <- files[[1]] %>%
+#     purrr::map(list.files, full.names = TRUE)
 
-jsu_preds_list <- list()
+# jsu_preds_list <- list()
 
-norm <- files[[2]] %>%
-    purrr::map(list.files, full.names = TRUE)
+# norm <- files[[2]] %>%
+#     purrr::map(list.files, full.names = TRUE)
 
-norm_preds_list <- jsu_preds_list
+# norm_preds_list <- jsu_preds_list
 
-f.i <- 1
-for (f.i in seq_along(jsu)) {
-    jsu_preds_list[[f.i]] <- list()
-    norm_preds_list[[f.i]] <- list()
-    files_jsu <- jsu[[f.i]]
-    files_norm <- norm[[f.i]]
-    for (i in seq_along(files_jsu)) {
-        jsu_preds_list[[f.i]][[i]] <- readr::read_delim(
-            files_jsu[i],
-            col_names = FALSE,
-            progress = FALSE,
-            show_col_types = FALSE
-        ) # %>%
-        # mutate_all(~ .x - mean(.x)) %>%
-        # pivot_longer(everything()) %>%
-        # pull(value)
+# f.i <- 1
+# for (f.i in seq_along(jsu)) {
+#     jsu_preds_list[[f.i]] <- list()
+#     norm_preds_list[[f.i]] <- list()
+#     files_jsu <- jsu[[f.i]]
+#     files_norm <- norm[[f.i]]
+#     i <- 1
+#     for (i in seq_along(files_jsu)) {
+#         jsu_preds_list[[f.i]][[i]] <- readr::read_delim(
+#             files_jsu[i],
+#             col_names = FALSE,
+#             progress = FALSE,
+#             show_col_types = FALSE
+#         )[1:100, ]
 
-        norm_preds_list[[f.i]][[i]] <- readr::read_delim(
-            files_norm[i],
-            col_names = FALSE,
-            progress = FALSE,
-            show_col_types = FALSE
-        ) # %>%
-        # mutate_all(~ .x - mean(.x)) %>%
-        # pivot_longer(everything()) %>%
-        # pull(value)
-        cat(i, "\r")
-    }
-}
+#         norm_preds_list[[f.i]][[i]] <- readr::read_delim(
+#             files_norm[i],
+#             col_names = FALSE,
+#             progress = FALSE,
+#             show_col_types = FALSE
+#         )[1:100, ]
+#         cat(i, "\r")
+#     }
+# }
 
-jsu_preds <- purrr::map(jsu_preds_list, bind_rows) %>%
-    purrr::map(~ mutate_all(.x, ~ .x - mean(.x))) %>%
-    purrr::map(~ pivot_longer(.x, everything())) %>%
-    purrr::map(~ pull(.x, value)) %>%
-    bind_cols()
+# jsu_preds <- purrr::map(jsu_preds_list, bind_rows) %>%
+#     purrr::map(~ mutate_all(.x, ~ .x - mean(.x))) %>%
+#     purrr::map(~ pivot_longer(.x, everything())) %>%
+#     purrr::map(~ pull(.x, value)) %>%
+#     bind_cols()
 
-norm_preds <- purrr::map(norm_preds_list, bind_rows) %>%
-    purrr::map(~ mutate_all(.x, ~ .x - mean(.x))) %>%
-    purrr::map(~ pivot_longer(.x, everything())) %>%
-    purrr::map(~ pull(.x, value)) %>%
-    bind_cols()
+# norm_preds <- purrr::map(norm_preds_list, bind_rows) %>%
+#     purrr::map(~ mutate_all(.x, ~ .x - mean(.x))) %>%
+#     purrr::map(~ pivot_longer(.x, everything())) %>%
+#     purrr::map(~ pull(.x, value)) %>%
+#     bind_cols()
 
-preds <- cbind(norm_preds, jsu_preds)
+# preds <- cbind(norm_preds, jsu_preds)
+
+# # Store preds sample (the first 100 out of 10000 trajectories)
+# save(preds, file = "data/preds_traj_sample.rds")
+
+# Load preds sample (the first 100 out of 10000 trajectories)
+# The dataset (~4GB) is available on request.
+load("data/preds_traj_sample.rds")
 
 colnames(preds) <- c(
-    paste0("norm", 1:dim(norm_preds)[2]),
-    paste0("jsu", 1:dim(jsu_preds)[2])
+    paste0("norm", 1:4),
+    paste0("jsu", 1:4)
 )
 set.seed(1)
 # 2^26 ~37 Mio -> Takes around an hour to compute
-idx <- sample.int(dim(preds)[1], 2^26)
+idx <- sample.int(dim(preds)[1], min(2^26, dim(preds)[1]))
 
 # %%
 M <- cor(preds[idx, ])

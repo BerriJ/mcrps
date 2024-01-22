@@ -61,7 +61,7 @@ install.packages(c(
 
 The primary data (realizations and expert predictions as quantiles) used in this paper is available in the [data](data) folder. 
 
-Additional data is needed solely for recreating the [correlation plot](code/corrplot.R). That data is about 10GB in size (the trajectories of the expert predictions) and can be downloaded here or here (Please report if any of these links go unavailable). The data should be copied to the [data](data) folder.
+For recreating the [correlation plot](code/corrplot.R) we provide a sample of the first 100 (out of 10000) trajectories in the data folder: [data/preds_traj_sample.rds](data/preds_traj_sample.rds). The full dataset is about 4GB in size (the trajectories of the expert predictions) and therefore too big to be uploaded to github. We will provide it on request. If provided, the data should be placed in the data folder. The commented lines 1-55 in [correlation plot](code/corrplot.R) will read and process the data.
 
 ### Rerun the Code
 
@@ -74,4 +74,4 @@ To reproduce the results, figures, and tables presented in [1] you can run the `
 
 Note that most plots are exported to latex files. 
 
-Note that the tables produced by the code were merged together using this [latex document](paper/anc/JSU1_Norm4/tab_joined.tex). That latex document was then included in the paper using. 
+Note that the tables produced by the code were merged together using this [latex document](paper/anc/JSU1_Norm4/tab_joined.tex). That latex document was then included in the paper.
